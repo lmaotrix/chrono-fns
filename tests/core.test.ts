@@ -22,83 +22,59 @@ describe('Core Utilities', () => {
   });
 
   describe('toDate', () => {
-    it('should return a new Date instance for Date input', () => {
-      const input = new Date('2025-01-01');
-      const result = toDate(input);
-      expect(result).toEqual(input);
-      expect(result).not.toBe(input); // Should be a new instance
+    it('should handle different input types', () => {
+      const date = new Date('2025-01-01');
+      const timestamp = 1720537200000;
+      
+      // Date input - should return new instance
+      const result1 = toDate(date);
+      expect(result1).toEqual(date);
+      expect(result1).not.toBe(date);
+      
+      // String input
+      expect(toDate('2025-07-09')).toEqual(new Date('2025-07-09'));
+      
+      // Number input
+      expect(toDate(timestamp)).toEqual(new Date(timestamp));
     });
 
-    it('should parse string dates', () => {
-      const result = toDate('2025-07-09');
-      expect(result).toEqual(new Date('2025-07-09'));
-    });
-
-    it('should parse number timestamps', () => {
-      const timestamp = 1720537200000; // July 9, 2025
-      const result = toDate(timestamp);
-      expect(result).toEqual(new Date(timestamp));
-    });
-
-    it('should throw for invalid string dates', () => {
+    it('should throw for invalid inputs', () => {
       expect(() => toDate('invalid')).toThrow('Invalid date: invalid');
-    });
-
-    it('should throw for invalid types', () => {
       expect(() => toDate({} as any)).toThrow('Invalid date type: object');
     });
   });
 
   describe('isValid', () => {
-    it('should return true for valid dates', () => {
+    it('should validate different date types', () => {
+      // Valid dates
       expect(isValid(new Date('2025-07-09'))).toBe(true);
       expect(isValid('2025-07-09')).toBe(true);
       expect(isValid(1720537200000)).toBe(true);
-    });
-
-    it('should return false for invalid dates', () => {
+      
+      // Invalid dates
       expect(isValid('invalid')).toBe(false);
       expect(isValid(new Date('invalid'))).toBe(false);
       expect(isValid(NaN)).toBe(false);
     });
   });
 
-  describe('now', () => {
-    it('should return current date and time', () => {
-      const result = now();
-      expect(result).toEqual(mockDate);
-    });
-  });
-
-  describe('today', () => {
-    it('should return today at midnight', () => {
-      const result = today();
-      // Use local time for comparison since today() uses local time
-      const expected = new Date(mockDate);
-      expected.setHours(0, 0, 0, 0);
-      expect(result).toEqual(expected);
-    });
-  });
-
-  describe('tomorrow', () => {
-    it('should return tomorrow at midnight', () => {
-      const result = tomorrow();
-      // Use local time for comparison since tomorrow() uses local time
-      const expected = new Date(mockDate);
-      expected.setDate(expected.getDate() + 1);
-      expected.setHours(0, 0, 0, 0);
-      expect(result).toEqual(expected);
-    });
-  });
-
-  describe('yesterday', () => {
-    it('should return yesterday at midnight', () => {
-      const result = yesterday();
-      // Use local time for comparison since yesterday() uses local time
-      const expected = new Date(mockDate);
-      expected.setDate(expected.getDate() - 1);
-      expected.setHours(0, 0, 0, 0);
-      expect(result).toEqual(expected);
+  describe('date generators', () => {
+    it('should generate correct dates', () => {
+      expect(now()).toEqual(mockDate);
+      
+      const todayExpected = new Date(mockDate);
+      todayExpected.setHours(0, 0, 0, 0);
+      expect(today()).toEqual(todayExpected);
+      
+      const tomorrowExpected = new Date(mockDate);
+      tomorrowExpected.setDate(tomorrowExpected.getDate() + 1);
+      tomorrowExpected.setHours(0, 0, 0, 0);
+      expect(tomorrow()).toEqual(tomorrowExpected);
+      
+      const yesterdayExpected = new Date(mockDate);
+      yesterdayExpected.setDate(yesterdayExpected.getDate() - 1);
+      yesterdayExpected.setHours(0, 0, 0, 0);
+      expect(yesterday()).toEqual(yesterdayExpected);
     });
   });
 
@@ -111,130 +87,52 @@ describe('Core Utilities', () => {
     });
   });
 
-  describe('isEqual', () => {
-    it('should return true for equal dates', () => {
-      const date1 = new Date('2025-07-09T15:00:00Z');
-      const date2 = new Date('2025-07-09T15:00:00Z');
-      expect(isEqual(date1, date2)).toBe(true);
-    });
-
-    it('should return false for different dates', () => {
-      const date1 = new Date('2025-07-09T15:00:00Z');
-      const date2 = new Date('2025-07-09T16:00:00Z');
+  describe('date comparisons', () => {
+    it('should compare dates correctly', () => {
+      const date1 = new Date('2025-07-08');
+      const date2 = new Date('2025-07-09');
+      const date3 = new Date('2025-07-09');
+      
+      // isEqual
+      expect(isEqual(date2, date3)).toBe(true);
       expect(isEqual(date1, date2)).toBe(false);
-    });
-
-    it('should work with different date types', () => {
-      const date1 = new Date('2025-07-09');
-      const date2 = '2025-07-09';
-      expect(isEqual(date1, date2)).toBe(true);
-    });
-  });
-
-  describe('isBefore', () => {
-    it('should return true when first date is before second', () => {
-      const date1 = new Date('2025-07-08');
-      const date2 = new Date('2025-07-09');
+      expect(isEqual(date2, '2025-07-09')).toBe(true);
+      
+      // isBefore
       expect(isBefore(date1, date2)).toBe(true);
-    });
-
-    it('should return false when first date is after second', () => {
-      const date1 = new Date('2025-07-10');
-      const date2 = new Date('2025-07-09');
-      expect(isBefore(date1, date2)).toBe(false);
-    });
-
-    it('should return false when dates are equal', () => {
-      const date1 = new Date('2025-07-09');
-      const date2 = new Date('2025-07-09');
-      expect(isBefore(date1, date2)).toBe(false);
-    });
-  });
-
-  describe('isAfter', () => {
-    it('should return true when first date is after second', () => {
-      const date1 = new Date('2025-07-10');
-      const date2 = new Date('2025-07-09');
-      expect(isAfter(date1, date2)).toBe(true);
-    });
-
-    it('should return false when first date is before second', () => {
-      const date1 = new Date('2025-07-08');
-      const date2 = new Date('2025-07-09');
+      expect(isBefore(date2, date1)).toBe(false);
+      expect(isBefore(date2, date3)).toBe(false);
+      
+      // isAfter
+      expect(isAfter(date2, date1)).toBe(true);
       expect(isAfter(date1, date2)).toBe(false);
-    });
-
-    it('should return false when dates are equal', () => {
-      const date1 = new Date('2025-07-09');
-      const date2 = new Date('2025-07-09');
-      expect(isAfter(date1, date2)).toBe(false);
+      expect(isAfter(date2, date3)).toBe(false);
     });
   });
 
   describe('differenceIn', () => {
-    // Define dates as variables that can be properly processed
-    let date1: Date;
-    let date2: Date;
-    
-    beforeEach(() => {
-      date1 = new Date('2025-07-09T15:00:00Z');
-      date2 = new Date('2025-07-09T12:00:00Z');
+    it('should calculate differences in various units', () => {
+      const date1 = new Date('2025-07-09T15:00:00Z');
+      const date2 = new Date('2025-07-09T12:00:00Z');
+      
+      // Time units
+      expect(differenceIn(date1, date2, 'millisecond')).toBe(3 * 60 * 60 * 1000);
+      expect(differenceIn(date1, date2, 'second')).toBe(3 * 60 * 60);
+      expect(differenceIn(date1, date2, 'minute')).toBe(3 * 60);
+      expect(differenceIn(date1, date2, 'hour')).toBe(3);
+      
+      // Larger units
+      expect(differenceIn(new Date('2025-07-12'), new Date('2025-07-09'), 'day')).toBe(3);
+      expect(differenceIn(new Date('2025-07-16'), new Date('2025-07-09'), 'week')).toBe(1);
+      expect(differenceIn(new Date('2025-09-09'), new Date('2025-07-09'), 'month')).toBe(2);
+      expect(differenceIn(new Date('2027-07-09'), new Date('2025-07-09'), 'year')).toBe(2);
     });
 
-    it('should calculate difference in milliseconds', () => {
-      const result = differenceIn(date1, date2, 'millisecond');
-      expect(result).toBe(3 * 60 * 60 * 1000); // 3 hours in milliseconds
-    });
-
-    it('should calculate difference in seconds', () => {
-      const result = differenceIn(date1, date2, 'second');
-      expect(result).toBe(3 * 60 * 60); // 3 hours in seconds
-    });
-
-    it('should calculate difference in minutes', () => {
-      const result = differenceIn(date1, date2, 'minute');
-      expect(result).toBe(3 * 60); // 3 hours in minutes
-    });
-
-    it('should calculate difference in hours', () => {
-      const result = differenceIn(date1, date2, 'hour');
-      expect(result).toBe(3);
-    });
-
-    it('should calculate difference in days', () => {
-      const dateA = new Date('2025-07-12');
-      const dateB = new Date('2025-07-09');
-      const result = differenceIn(dateA, dateB, 'day');
-      expect(result).toBe(3);
-    });
-
-    it('should calculate difference in weeks', () => {
-      const dateA = new Date('2025-07-16');
-      const dateB = new Date('2025-07-09');
-      const result = differenceIn(dateA, dateB, 'week');
-      expect(result).toBe(1);
-    });
-
-    it('should calculate difference in months', () => {
-      const dateA = new Date('2025-09-09');
-      const dateB = new Date('2025-07-09');
-      const result = differenceIn(dateA, dateB, 'month');
-      expect(result).toBe(2);
-    });
-
-    it('should calculate difference in years', () => {
-      const dateA = new Date('2027-07-09');
-      const dateB = new Date('2025-07-09');
-      const result = differenceIn(dateA, dateB, 'year');
-      expect(result).toBe(2);
-    });
-
-    it('should handle negative differences', () => {
-      const result = differenceIn(date2, date1, 'hour');
-      expect(result).toBe(-3);
-    });
-
-    it('should throw for unknown units', () => {
+    it('should handle negative differences and errors', () => {
+      const date1 = new Date('2025-07-09T15:00:00Z');
+      const date2 = new Date('2025-07-09T12:00:00Z');
+      
+      expect(differenceIn(date2, date1, 'hour')).toBe(-3);
       expect(() => differenceIn(date1, date2, 'unknown' as any)).toThrow('Unknown unit: unknown');
     });
   });
