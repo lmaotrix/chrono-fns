@@ -31,7 +31,6 @@
     "emitDecoratorMetadata": true,
     "isolatedModules": true,
     "noEmit": false,
-    "incremental": true,
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"]

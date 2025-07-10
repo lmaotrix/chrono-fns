@@ -311,7 +311,15 @@ For comprehensive API documentation, examples, and guides:
 
 ## 🎮 Try It Out
 
-Run the example script to see the library in action:
+You can easily use the library by installing it via npm:
+
+```bash
+npm install chrono-fns
+```
+
+And then import and use it in your project as shown in the [Quick Start](#-quick-start) section.
+
+If you wish to try the example script, ensure that you have built the project by running:
 
 ```bash
 npm run build

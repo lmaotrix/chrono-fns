@@ -17,7 +17,7 @@ export function formatDate(date: DateLike, format: DateFormat, options: FormatOp
     'ss': () => d.getSeconds().toString().padStart(2, '0'),
   };
   
-  let result = format;
+  let result: string = format;
   for (const [pattern, replacer] of Object.entries(patterns)) {
     result = result.replace(new RegExp(pattern, 'g'), replacer());
   }

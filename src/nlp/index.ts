@@ -95,8 +95,8 @@ function parseRelativeTime(input: string, defaultDate: Date): NLPParseResult {
   
   let match = input.match(futurePattern);
   if (match) {
-    const amount = parseInt(match[1]);
-    const unit = normalizeTimeUnit(match[2]);
+    const amount = parseInt(match[1]!);
+    const unit = normalizeTimeUnit(match[2]!);
     const date = add(defaultDate, amount, unit);
     
     return {
@@ -109,8 +109,8 @@ function parseRelativeTime(input: string, defaultDate: Date): NLPParseResult {
   
   match = input.match(pastPattern);
   if (match) {
-    const amount = parseInt(match[1]);
-    const unit = normalizeTimeUnit(match[2]);
+    const amount = parseInt(match[1]!);
+    const unit = normalizeTimeUnit(match[2]!);
     const date = subtract(defaultDate, amount, unit);
     
     return {
@@ -135,8 +135,8 @@ function parseWeekdays(input: string, defaultDate: Date): NLPParseResult {
   
   const match = input.match(pattern);
   if (match) {
-    const modifier = match[1].toLowerCase();
-    const weekday = match[2].toLowerCase();
+    const modifier = match[1]!.toLowerCase();
+    const weekday = match[2]!.toLowerCase();
     const targetDay = weekdays.indexOf(weekday);
     
     if (targetDay === -1) {
